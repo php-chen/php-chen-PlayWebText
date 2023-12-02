@@ -1,9 +1,9 @@
 {
-  "name": "commentsToRead",
-  "displayName": "Comments to read",
+  "name": "评论区阅读",
+  "displayName": "评论区阅读",
   "version": "0.0.1",
   "description": "谷歌浏览器各个平台评论区阅读插件",
-  "author": "readBiLi",
+  "author": "无我",
   "scripts": {
     "dev": "plasmo dev",
     "build": "plasmo build",
