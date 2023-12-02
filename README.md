@@ -44,3 +44,7 @@ B站：
 * 降低音量 alter + 方向键下
 * 加快语速 alter + 方向键右
 * 降低语速 alter + 方向键左
+
+# 百度网盘地址
+链接：https://pan.baidu.com/s/1lN4CCxOmS-PEQbRo6OBTwA 
+提取码：p5wf
