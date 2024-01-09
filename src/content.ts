@@ -10,12 +10,32 @@ const option = {
 }
 const speech = new PlayWeb(option)
 // 阅读配置项
-const readConfig = {
+
+type ReadConfig = {
+    listIndex: number,
+    dissIndex: number, // 评论区索引
+    dissMaxIndex: number, // 评论区长度
+    mainOrDissStatus: MainOrDissStatus, // 状态
+    readStatus: boolean // 阅读状态
+}
+/**
+ * 层主阅读还是评论区阅读状态
+ */
+type MainOrDissStatus = 'main' | 'diss'
+const readConfig: ReadConfig = {
     listIndex: 0,
+    dissIndex: 0, // 评论区索引
+    dissMaxIndex: 0, // 评论区长度
+    mainOrDissStatus: 'main', // main diss
     readStatus: true
 }
+type ReadList = {
+    mainText: string,
+    dissLength: number,// 评论区长度
+    dissList: { text: string, index: number }[]
+}[]
 // 阅读列表
-const readList: string[] = []
+const readList: ReadList = []
 // 监听页面操作
 body.addEventListener('keydown', (event) => {
     if (event.ctrlKey && event.key === 'q' || event.key === 'Q') {
@@ -23,7 +43,7 @@ body.addEventListener('keydown', (event) => {
     }
     if (event.altKey && event.key === 'q' || event.key === 'Q') {
         if (readConfig.readStatus == true) { // 播放状态-> 暂停阅读
-            
+
             console.log('暂停阅读');
             speech.speechPause()
         } else { // 暂停状态 恢复阅读
@@ -223,23 +243,40 @@ function PlayText(list) {
     readConfig.readStatus = true
     for (let i = 0; i < list.length; i++) {
         const item = list[i]
-        let text = ``
-        text += `层主${item.main.name}说：${item.main.content}。` // 层主评论
+        const temp = {
+            mainText: '',
+            dissLength: 0,
+            dissList: []
+        }
+        temp.mainText = `层主${item.main.name}留言说：${item.main.content}。` // 层主评论
+        temp.dissLength = item.diss.length
         for (let j = 0; j < item.diss.length; j++) {
             const temp = item.diss[j]
-            text += `评论区${temp.name}说：${temp.content}。` // 评论区评论层主内容
+            let text = `评论区用户${temp.name}评论说：${temp.content}。` // 评论区评论层主内容
+            temp.dissList.push({
+                text: text,
+                index: j
+            })
         }
-        readList.push(text)// 过滤掉img标签
+        readList.push(temp)// 过滤掉img标签
+
     }
-    SetSpeech()
+    SetSpeech('main')
 }
 
 /**
  * 设置阅读
  */
-function SetSpeech() {
+function SetSpeech(status: MainOrDissStatus) {
     if (readConfig.listIndex >= readList.length) return
-    speech.setText(readList[readConfig.listIndex])
+    if (status == 'main') {
+        speech.setText(readList[readConfig.listIndex].mainText)
+    }
+    if (status == 'diss') {
+        speech.setText(readList[readConfig.listIndex].dissList[readConfig.dissIndex].text)
+        readConfig.dissIndex += 1
+
+    }
     speech.speechStart()
     readConfig.listIndex += 1 // 自增索引
 }
@@ -248,6 +285,14 @@ function SetSpeech() {
  * @param event 
  */
 function speechEnd() {
-    SetSpeech()
+    if (readConfig.mainOrDissStatus == 'main') {
+        SetSpeech('diss')
+        readConfig.mainOrDissStatus = 'diss'
+    }
+    if (readConfig.mainOrDissStatus == 'diss' && readConfig.dissMaxIndex >= readConfig.dissIndex) {
+        SetSpeech('main')
+        readConfig.mainOrDissStatus = 'main'
+
+    }
 }
 

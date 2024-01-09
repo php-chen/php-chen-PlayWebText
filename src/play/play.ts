@@ -36,7 +36,6 @@ class Speech {
         this.speech.pitch = option.pitch
         this.speech.lang = option.lang
         this.EndFun = option.EndFun
-        console.log(this.speech);
         this.speech.onend = () => { // 阅读结束回调
             this.speechEnd()
         }
@@ -51,7 +50,6 @@ class Speech {
      * 开始阅读
      */
     speechStart() {
-        console.log('开始阅读');
         window.speechSynthesis.speak(this.speech)
     }
     /**
@@ -70,7 +68,6 @@ class Speech {
      * 结束阅读
      */
     speechEnd() {
-        console.log('结束阅读');
         this.EndFun()
     }
     /**
@@ -86,8 +83,6 @@ class Speech {
         // 重新设置语音合成对象的属性
         window.speechSynthesis.cancel(); // 先取消之前的合成
         window.speechSynthesis.speak(this.speech);
-        console.log(this.speech);
-
     }
 
 
